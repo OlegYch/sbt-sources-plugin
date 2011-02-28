@@ -9,7 +9,7 @@ import sbt._
 class SbtSourcesProject(info: ProjectInfo) extends ParentProject(info) with IdeaProject with posterous.Publish {
   override def managedStyle = ManagedStyle.Maven
 
-  lazy val publishTo = Resolver.file("GitHub Pages", new java.io.File("../mpeltonen.github.com/maven/"))
+  lazy val publishTo = Resolver.file("OlegYch repo wc", new java.io.File("../../mvn/mvn/"))
 
   lazy val core = project("sbt-sources-core", "sbt-sources-core", new Core(_))
   lazy val plugin = project("sbt-sources-plugin", "sbt-sources-plugin", new PluginProject(_) with IdeaProject, core)
@@ -26,7 +26,7 @@ class SbtSourcesProject(info: ProjectInfo) extends ParentProject(info) with Idea
   class ScriptedTests(info: ProjectInfo) extends DefaultProject(info) with test.SbtScripted with IdeaProject {
     val commonsIo = "commons-io" % "commons-io" % "1.4" withSources ()
 
-    override def scriptedSbt = "0.7.4"
+    override def scriptedSbt = "0.7.5.RC0"
 
     override def publishAction = task {
       None
