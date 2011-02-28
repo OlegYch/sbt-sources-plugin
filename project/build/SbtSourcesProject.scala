@@ -9,6 +9,8 @@ import sbt._
 class SbtSourcesProject(info: ProjectInfo) extends ParentProject(info) with IdeaProject with posterous.Publish {
   override def managedStyle = ManagedStyle.Maven
 
+  lazy val olegychRepo = "olegychRepo" at "https://bitbucket.org/olegych/mvn/raw/default"
+
   lazy val publishTo = Resolver.file("OlegYch repo wc", new java.io.File("../../mvn/mvn/"))
 
   lazy val core = project("sbt-sources-core", "sbt-sources-core", new Core(_))
