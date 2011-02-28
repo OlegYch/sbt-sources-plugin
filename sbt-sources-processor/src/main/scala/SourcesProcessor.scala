@@ -9,9 +9,9 @@ import processor._
 
 class SourcesProcessor extends BasicProcessor {
   def apply(project: Project, args: String) {
-    project match {
+    (project :: project.subProjects.values.toList).foreach(_ match {
       case p: BasicManagedProject => updateSources(p)
-    }
+    })
   }
 
   def updateSources(project: BasicManagedProject) {
