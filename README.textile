@@ -14,16 +14,16 @@ h3. Usage as processor
 
 <pre>
  > *olegychRepo at https://bitbucket.org/olegych/mvn/raw/default
- > *sources is com.olegych sbt-sources-plugin 0.1.0
+ > *sources is com.olegych sbt-sources-processor 0.1.0
  ...
  > sources
  ...
 </pre>
 
-You can also replace the default update task by issuing the following command (probably not the best idea because of probable bugs):
+You can also replace the default update task by issuing the following command (probably not the best idea for now):
 
 <pre>
- > *update is com.olegych sbt-sources-plugin 0.1.0
+ > *update is com.olegych sbt-sources-processor 0.1.0
 </pre>
 
 To revert to default 'update' use this command:
@@ -65,7 +65,7 @@ Use update-sources task instead of update. update will delete all previously pul
 h2. Contributors
 
 Thanks to Mikko Peltonen for his sbt-idea plugin, on which this one is based.
-See "contributors":http://github.com/mpeltonen/sbt-idea/contributors
+See "contributors":http://github.com/mpeltonen/sbt-sources-plugin/contributors
 
 h2. License
 
