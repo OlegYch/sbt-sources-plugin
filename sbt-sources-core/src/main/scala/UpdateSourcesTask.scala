@@ -43,6 +43,9 @@ trait UpdateSourcesTask {
 
   def addSources(getReport: => ResolveReport, md: DefaultModuleDescriptor): Unit = {
     val initialReport = getReport
+    if (initialReport.hasError) {
+      throw new ResolveException(initialReport.getAllProblemMessages.toArray.map(_.toString).toList.removeDuplicates)
+    }
     def deps(report: ResolveReport): Seq[IvyNode] = Buffer(report.getDependencies.asInstanceOf[ju.List[IvyNode]])
     def artifacts(report: ResolveReport): Seq[Artifact] = Buffer(report.getArtifacts.asInstanceOf[ju.List[Artifact]])
     log.info("Adding sources for " + artifacts(initialReport).toString)
@@ -76,9 +79,6 @@ trait UpdateSourcesTask {
     val resolveOptions = new ResolveOptions
     resolveOptions.setLog(ivyLogLevel(logging))
     val resolveReport = ivy.resolve(module, resolveOptions)
-    if (resolveReport.hasError) {
-      throw new ResolveException(resolveReport.getAllProblemMessages.toArray.map(_.toString).toList.removeDuplicates)
-    }
     resolveReport
   }
 

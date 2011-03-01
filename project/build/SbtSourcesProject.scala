@@ -23,10 +23,13 @@ class SbtSourcesProject(info: ProjectInfo) extends ParentProject(info) with Idea
 
   class Core(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
     override def unmanagedClasspath = super.unmanagedClasspath +++ info.sbtClasspath
+
+    override def libraryDependencies = super.libraryDependencies ++ Set("org.apache.ivy" % "ivy" % "2.2.0")
   }
 
   class ScriptedTests(info: ProjectInfo) extends DefaultProject(info) with test.SbtScripted with IdeaProject {
-    val commonsIo = "commons-io" % "commons-io" % "1.4" withSources ()
+    val commonsIo = "commons-io" % "commons-io" % "1.4"
+    val scalatest = "org.scalatest" % "scalatest" % "1.1"
 
     override def scriptedSbt = "0.7.5.RC0"
 
