@@ -1,3 +1,4 @@
+import collection.immutable.TreeSet
 import sbt._
 
 class ScriptedTestProject(info: ProjectInfo)
@@ -9,9 +10,9 @@ class ScriptedTestProject(info: ProjectInfo)
     "xalan" % "serializer" % "2.7.1"
   )
 
-  val compileEntries = Set(
-    "scalatest-1.1.jar1",
-    "scalatest-1.1-sources.jar",
+  val compileEntries = TreeSet(
+    "xml-apis-1.3.04.jar",
+    "xml-apis-1.3.04-sources.jar",
     "serializer-2.7.1.jar",
     "commons-io-1.4-sources.jar",
     "commons-io-1.4.jar",
@@ -20,5 +21,5 @@ class ScriptedTestProject(info: ProjectInfo)
     "xml-apis-1.3.04.jar"
   )
 
-  val testEntries = Set[String]()
+  val testEntries = TreeSet[String]()
 }

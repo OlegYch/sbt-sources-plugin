@@ -1,16 +1,17 @@
+import collection.immutable.TreeSet
 import sbt._
 
 class ScriptedTestProject(info: ProjectInfo)
   extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with ExpectedManagedLib {
 
-  val compileEntries = Set(
+  val compileEntries = TreeSet(
     "scalaj-http_2.8.0-0.2.5.jar",
     "time_2.8.0-0.2.jar",
     "commons-codec-1.4.jar",
     "joda-time-1.6.jar"
   )
 
-  val testEntries = Set(
+  val testEntries = TreeSet(
     "junit-4.8.1.jar"
   )
 
@@ -36,14 +37,14 @@ class ScriptedTestProject(info: ProjectInfo)
       "com.mysema.querydsl" % "querydsl-jpa" % "2.1.2"
     )
 
-    val compileEntries = Set(
+    val compileEntries = TreeSet(
       "scalaj-http_2.8.0-0.2.5.jar",
       "time_2.8.0-0.2.jar",
       "commons-codec-1.4.jar",
       "joda-time-1.6.jar"
     )
 
-    val testEntries = Set(
+    val testEntries = TreeSet(
       "junit-4.8.1.jar"
     )
   }, subproject1)
