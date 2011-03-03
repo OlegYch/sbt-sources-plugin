@@ -9,16 +9,6 @@ import processor._
 
 class SourcesProcessor extends BasicProcessor {
   def apply(project: Project, args: String) {
-    (project :: project.subProjects.values.toList).foreach(_ match {
-      case p: BasicManagedProject => updateSources(p)
-    })
-  }
-
-  def updateSources(project: BasicManagedProject) {
-    new UpdateSourcesTask {
-      val self = project
-
-      this.updateSources.run
-    }
+    UpdateSourcesTask(project)
   }
 }

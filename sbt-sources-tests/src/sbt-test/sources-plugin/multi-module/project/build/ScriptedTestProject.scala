@@ -2,16 +2,21 @@ import collection.immutable.TreeSet
 import sbt._
 
 class ScriptedTestProject(info: ProjectInfo)
-  extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with ExpectedManagedLib {
+        extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with
+        ExpectedManagedLib {
 
   val compileEntries = TreeSet(
-    "scalaj-http_2.8.0-0.2.5.jar",
-    "time_2.8.0-0.2.jar",
+    "commons-codec-1.4-sources.jar",
     "commons-codec-1.4.jar",
-    "joda-time-1.6.jar"
+    "joda-time-1.6-sources.jar",
+    "joda-time-1.6.jar",
+    "scalaj-http_2.8.0-0.2.5-sources.jar",
+    "scalaj-http_2.8.0-0.2.5.jar",
+    "time_2.8.0-0.2.jar"
   )
 
   val testEntries = TreeSet(
+    "junit-4.8.1-sources.jar",
     "junit-4.8.1.jar"
   )
 
@@ -37,15 +42,22 @@ class ScriptedTestProject(info: ProjectInfo)
       "com.mysema.querydsl" % "querydsl-jpa" % "2.1.2"
     )
 
-    val compileEntries = TreeSet(
-      "scalaj-http_2.8.0-0.2.5.jar",
-      "time_2.8.0-0.2.jar",
-      "commons-codec-1.4.jar",
-      "joda-time-1.6.jar"
+    val compileEntries = TreeSet[String](
+      "annotations-1.3.2.jar",
+      "asm-3.1.jar",
+      "cglib-2.2-sources.jar",
+      "cglib-2.2.jar",
+      "codegen-0.3.1-sources.jar",
+      "codegen-0.3.1.jar",
+      "collections-generic-4.01-sources.jar", "collections-generic-4.01.jar", "commons-lang-2.4-sources.jar",
+      "commons-lang-2.4.jar", "hibernate-jpa-2.0-api-1.0.0.Final-sources.jar",
+      "hibernate-jpa-2.0-api-1.0.0.Final.jar", "jsr305-1.3.2.jar", "mysema-commons-lang-0.2.1-sources.jar",
+      "mysema-commons-lang-0.2.1.jar", "querydsl-core-2.1.2-sources.jar", "querydsl-core-2.1.2.jar",
+      "querydsl-jpa-2.1.2-sources.jar", "querydsl-jpa-2.1.2.jar", "slf4j-api-1.6.1-sources.jar",
+      "slf4j-api-1.6.1.jar"
     )
 
-    val testEntries = TreeSet(
-      "junit-4.8.1.jar"
+    val testEntries = TreeSet[String](
     )
   }, subproject1)
 }

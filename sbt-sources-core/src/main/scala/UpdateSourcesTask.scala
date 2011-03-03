@@ -15,10 +15,15 @@ trait UpdateSourcesTask {
   val UpdateDescription =
     "Resolves and retrieves automatically managed dependencies (including sources)."
 
-  lazy val updateSources = updateSourcesTask(updateIvyModule, ivyUpdateConfiguration) describedAs UpdateDescription
+  lazy val updateSources = updateSourcesTask(updateIvyModule, ivyUpdateConfiguration) describedAs
+          UpdateDescription
 
+  //explicitly recurse into children, so that only parent project should have this task
   def updateSourcesTask(module: => IvySbt#Module, configuration: => UpdateConfiguration) = ivyTask {
     update(module, configuration)
+  } dependsOn task {
+    subProjects.values.filter(self !=).foreach(UpdateSourcesTask.apply)
+    None
   }
 
   import scala.collection.jcl.Buffer
@@ -28,7 +33,8 @@ trait UpdateSourcesTask {
   import org.apache.ivy.core.report._
 
   def srcDependency(node: IvyNode): DependencyDescriptor = {
-    val descriptor = node.getAllCallers()(0).getDependencyDescriptor().asInstanceOf[DefaultDependencyDescriptor]
+    val descriptor = node.getAllCallers()(0).getDependencyDescriptor()
+            .asInstanceOf[DefaultDependencyDescriptor]
     for (conf <- descriptor.getModuleConfigurations) {
       def ddad(t: String, attrs: Map[String, String]) = new
                       DefaultDependencyArtifactDescriptor(descriptor, node.getId.getName, t, "jar", null,
@@ -41,13 +47,16 @@ trait UpdateSourcesTask {
     descriptor
   }
 
-  def addSources(getReport: => ResolveReport, md: DefaultModuleDescriptor): Unit = {
+  def addSources(getReport: => ResolveReport, md: DefaultModuleDescriptor) {
     val initialReport = getReport
     if (initialReport.hasError) {
-      throw new ResolveException(initialReport.getAllProblemMessages.toArray.map(_.toString).toList.removeDuplicates)
+      throw new ResolveException(
+        initialReport.getAllProblemMessages.toArray.map(_.toString).toList.removeDuplicates)
     }
-    def deps(report: ResolveReport): Seq[IvyNode] = Buffer(report.getDependencies.asInstanceOf[ju.List[IvyNode]])
-    def artifacts(report: ResolveReport): Seq[Artifact] = Buffer(report.getArtifacts.asInstanceOf[ju.List[Artifact]])
+    def deps(report: ResolveReport): Seq[IvyNode] = Buffer(
+      report.getDependencies.asInstanceOf[ju.List[IvyNode]])
+    def artifacts(report: ResolveReport): Seq[Artifact] = Buffer(
+      report.getArtifacts.asInstanceOf[ju.List[Artifact]])
     log.info("Adding sources for " + artifacts(initialReport).toString)
     deps(initialReport).foreach((node: IvyNode) => md.addDependency(srcDependency(node)))
     val newReport = getReport
@@ -75,7 +84,8 @@ trait UpdateSourcesTask {
     }
   }
 
-  private def resolve(logging: UpdateLogging.Value)(ivy: Ivy, module: DefaultModuleDescriptor, defaultConf: String) = {
+  private def resolve(logging: UpdateLogging.Value)
+                     (ivy: Ivy, module: DefaultModuleDescriptor, defaultConf: String) = {
     val resolveOptions = new ResolveOptions
     resolveOptions.setLog(ivyLogLevel(logging))
     val resolveReport = ivy.resolve(module, resolveOptions)
@@ -91,6 +101,22 @@ trait UpdateSourcesTask {
       case DownloadOnly => LOG_DOWNLOAD_ONLY
       case Full => LOG_DEFAULT
     }
+}
+
+object UpdateSourcesTask {
+  def apply(project: Project) {
+    project match {
+      case p: BasicManagedProject => apply(p)
+    }
+  }
+
+  def apply(project: BasicManagedProject) {
+    new UpdateSourcesTask {
+      val self = project
+
+      this.updateSources.run
+    }
+  }
 }
 
 final class ResolveException(messages: List[String]) extends RuntimeException(messages.mkString("\n"))
