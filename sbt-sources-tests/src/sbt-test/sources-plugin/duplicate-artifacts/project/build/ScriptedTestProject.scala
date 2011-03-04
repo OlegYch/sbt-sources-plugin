@@ -6,7 +6,7 @@ class ScriptedTestProject(info: ProjectInfo)
         ExpectedManagedLib {
 
   override def libraryDependencies = Set(
-    "org.seleniumhq.selenium" % "selenium-server" % "2.0a6" % "compile" withSources
+    "org.seleniumhq.selenium" % "selenium-server" % "2.0a6" % "compile"
     , "commons-lang" % "commons-lang" % "2.5" % "compile" withSources
   )
 
