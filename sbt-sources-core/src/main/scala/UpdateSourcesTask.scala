@@ -31,20 +31,28 @@ trait UpdateSourcesTask {
   import org.apache.ivy.core.module.descriptor._
   import org.apache.ivy.core.resolve._
   import org.apache.ivy.core.report._
+  import org.apache.ivy.core.module.descriptor.{DefaultDependencyDescriptor => DDD}
+  import org.apache.ivy.core.module.descriptor.{DependencyArtifactDescriptor => DAD}
 
-  def srcDependency(node: IvyNode): DependencyDescriptor = {
-    val descriptor = node.getAllCallers()(0).getDependencyDescriptor()
-            .asInstanceOf[DefaultDependencyDescriptor]
-    for (conf <- descriptor.getModuleConfigurations) {
+  def addSources(descriptor: DDD, dependencyArtifacts: List[DAD]) {
+    log.info(descriptor.toString)
+    log.info("artifacts for %s : %s".format(descriptor, dependencyArtifacts))
+    for (conf <- List("compile")) {
       def ddad(t: String, attrs: Map[String, String]) = new
-                      DefaultDependencyArtifactDescriptor(descriptor, node.getId.getName, t, "jar", null,
+                      DefaultDependencyArtifactDescriptor(descriptor, descriptor.getDependencyId.getName, t,
+                        "jar", null,
                         new ju.HashMap[String, String] {
                           attrs.foreach(e => put(e._1, e._2))
                         })
-      descriptor.addDependencyArtifact(conf, ddad("jar", Map.empty))
-      descriptor.addDependencyArtifact(conf, ddad("src", Map("classifier" -> "sources")))
+      def addArtifact(artifactDescriptor: DAD) {
+        if (!dependencyArtifacts.exists((d: DAD) => d.getType == artifactDescriptor.getType)) {
+          log.info("Adding artifact %s".format(artifactDescriptor))
+          descriptor.addDependencyArtifact(conf, artifactDescriptor)
+        }
+      }
+      addArtifact(ddad("jar", Map()))
+      addArtifact(ddad("src", Map("classifier" -> "sources")))
     }
-    descriptor
   }
 
   def addSources(getReport: => ResolveReport, md: DefaultModuleDescriptor) {
@@ -57,8 +65,21 @@ trait UpdateSourcesTask {
       report.getDependencies.asInstanceOf[ju.List[IvyNode]])
     def artifacts(report: ResolveReport): Seq[Artifact] = Buffer(
       report.getArtifacts.asInstanceOf[ju.List[Artifact]])
+    def descriptor(node: IvyNode) = node.getAllCallers()(0).getDependencyDescriptor().asInstanceOf[DDD]
     log.info("Adding sources for " + artifacts(initialReport).toString)
-    deps(initialReport).foreach((node: IvyNode) => md.addDependency(srcDependency(node)))
+    val nodesByIdWOVersion = deps(initialReport)
+            .map((node: IvyNode) => ((node.getId.getName, node.getId.getOrganisation), node))
+    type DepsWithArtifacts = (DDD, List[DAD])
+    type IdWOVersion = (String, String)
+    type MapForDeps = Map[IdWOVersion, DepsWithArtifacts]
+    val descriptors = (Map.empty[IdWOVersion, DepsWithArtifacts] /: nodesByIdWOVersion) {
+      (map: MapForDeps, item: (IdWOVersion, IvyNode)) =>
+        val d = descriptor(item._2)
+        val newArtifacts: List[DAD] = d.getAllDependencyArtifacts.toList
+        val previousArtifacts: List[DAD] = map.getOrElse(item._1, (d, Nil))._2
+        map + (item._1 -> (d, previousArtifacts ::: newArtifacts))
+    }
+    descriptors.values.foreach(p => addSources(p._1, p._2))
     val newReport = getReport
     log.info("Added sources " + artifacts(newReport).toString)
     return newReport

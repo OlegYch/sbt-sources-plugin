@@ -1,12 +1,14 @@
 import collection.immutable.TreeSet
 import sbt._
 
-class ScriptedTestProject(info: ProjectInfo)
+class DuplicateArtifactsTestProject(info: ProjectInfo)
         extends DefaultProject(info) with ScriptedTestAssertTasks with ProjectWithSources with
         ExpectedManagedLib {
+  val _ = "mysema" at "http://source.mysema.com/maven2/releases"
+  val __ = "jboss" at "https://repository.jboss.org/nexus/content/groups/public-jboss/"
 
   override def libraryDependencies = Set(
-    "org.seleniumhq.selenium" % "selenium-server" % "2.0a6" % "compile"
+    "com.mysema.querydsl" % "querydsl-core" % "2.1.2"
     , "commons-lang" % "commons-lang" % "2.5" % "compile" withSources
   )
 

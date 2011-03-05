@@ -1,8 +1,9 @@
 import collection.immutable.TreeSet
 import sbt._
 
-class ScriptedTestProject(info: ProjectInfo)
-  extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with ExpectedManagedLib {
+class BasicTestProject(info: ProjectInfo)
+        extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with
+        ExpectedManagedLib {
 
   override def libraryDependencies = super.libraryDependencies ++ Set(
     "commons-io" % "commons-io" % "1.4" withSources,

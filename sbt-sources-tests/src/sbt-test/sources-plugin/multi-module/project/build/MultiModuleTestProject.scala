@@ -1,7 +1,7 @@
 import collection.immutable.TreeSet
 import sbt._
 
-class ScriptedTestProject(info: ProjectInfo)
+class MultiModuleTestProject(info: ProjectInfo)
         extends ParentProject(info) with ScriptedTestAssertTasks with ProjectWithSources with
         ExpectedManagedLib {
 
