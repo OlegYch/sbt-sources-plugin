@@ -13,14 +13,11 @@ class DuplicateArtifactsTestProject(info: ProjectInfo)
   )
 
   val compileEntries = TreeSet(
-    "xml-apis-1.3.04.jar",
-    "xml-apis-1.3.04-sources.jar",
-    "serializer-2.7.1.jar",
-    "commons-io-1.4-sources.jar",
-    "commons-io-1.4.jar",
-    "commons-lang-2.5-sources.jar",
-    "commons-lang-2.5.jar",
-    "xml-apis-1.3.04.jar"
+    "annotations-1.3.2.jar", "asm-3.1.jar", "cglib-2.2-sources.jar", "cglib-2.2.jar",
+    "codegen-0.3.1-sources.jar", "codegen-0.3.1.jar", "collections-generic-4.01-sources.jar",
+    "collections-generic-4.01.jar", "commons-lang-2.5-sources.jar", "commons-lang-2.5.jar",
+    "jsr305-1.3.2.jar", "mysema-commons-lang-0.2.1-sources.jar", "mysema-commons-lang-0.2.1.jar",
+    "querydsl-core-2.1.2-sources.jar", "querydsl-core-2.1.2.jar"
   )
 
   val testEntries = TreeSet[String]()

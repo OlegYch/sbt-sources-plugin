@@ -34,10 +34,11 @@ trait UpdateSourcesTask {
   import org.apache.ivy.core.module.descriptor.{DefaultDependencyDescriptor => DDD}
   import org.apache.ivy.core.module.descriptor.{DependencyArtifactDescriptor => DAD}
 
-  def addSources(descriptor: DDD, dependencyArtifacts: List[DAD]) {
-    log.info(descriptor.toString)
-    log.info("artifacts for %s : %s".format(descriptor, dependencyArtifacts))
-    for (conf <- List("compile")) {
+  def addSources(descriptors: List[DDD], dependencyArtifacts: List[DAD]) {
+    val descriptor = descriptors.head
+    log.info("artifacts for %s : %s".format(descriptors, dependencyArtifacts))
+    for (conf <- descriptor.getModuleConfigurations.filter(List("compile", "provided", "test") contains)
+            .take(1)) {
       def ddad(t: String, attrs: Map[String, String]) = new
                       DefaultDependencyArtifactDescriptor(descriptor, descriptor.getDependencyId.getName, t,
                         "jar", null,
@@ -45,7 +46,7 @@ trait UpdateSourcesTask {
                           attrs.foreach(e => put(e._1, e._2))
                         })
       def addArtifact(artifactDescriptor: DAD) {
-        if (!dependencyArtifacts.exists((d: DAD) => d.getType == artifactDescriptor.getType)) {
+        if (!dependencyArtifacts.exists((d: DAD) => artifactDescriptor.getType == d.getType)) {
           log.info("Adding artifact %s".format(artifactDescriptor))
           descriptor.addDependencyArtifact(conf, artifactDescriptor)
         }
@@ -65,17 +66,17 @@ trait UpdateSourcesTask {
       report.getDependencies.asInstanceOf[ju.List[IvyNode]])
     def artifacts(report: ResolveReport): Seq[Artifact] = Buffer(
       report.getArtifacts.asInstanceOf[ju.List[Artifact]])
-    def descriptor(node: IvyNode) = node.getAllCallers()(0).getDependencyDescriptor().asInstanceOf[DDD]
     log.info("Adding sources for " + artifacts(initialReport).toString)
     val nodesByIdWOVersion = deps(initialReport)
             .map((node: IvyNode) => ((node.getId.getName, node.getId.getOrganisation), node))
-    type DepsWithArtifacts = (DDD, List[DAD])
+    log.info("Nodes " + nodesByIdWOVersion)
+    type DepsWithArtifacts = (List[DDD], List[DAD])
     type IdWOVersion = (String, String)
     type MapForDeps = Map[IdWOVersion, DepsWithArtifacts]
     val descriptors = (Map.empty[IdWOVersion, DepsWithArtifacts] /: nodesByIdWOVersion) {
       (map: MapForDeps, item: (IdWOVersion, IvyNode)) =>
-        val d = descriptor(item._2)
-        val newArtifacts: List[DAD] = d.getAllDependencyArtifacts.toList
+        val d = item._2.getAllCallers.map(_.getDependencyDescriptor().asInstanceOf[DDD]).toList
+        val newArtifacts: List[DAD] = d.flatMap(_.getAllDependencyArtifacts).toList
         val previousArtifacts: List[DAD] = map.getOrElse(item._1, (d, Nil))._2
         map + (item._1 -> (d, previousArtifacts ::: newArtifacts))
     }
