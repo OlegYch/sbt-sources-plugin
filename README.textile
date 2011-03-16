@@ -14,7 +14,7 @@ h3. Usage as processor
 
 <pre>
  > *olegychRepo at https://bitbucket.org/olegych/mvn/raw/default
- > *sources is com.olegych sbt-sources-processor 0.2.0-SNAPSHOT
+ > *sources is com.olegych sbt-sources-processor 0.2.0
  ...
  > sources
  ...
@@ -23,7 +23,7 @@ h3. Usage as processor
 You can also replace the default update task by issuing the following command (probably not the best idea for now):
 
 <pre>
- > *update is com.olegych sbt-sources-processor 0.2.0-SNAPSHOT
+ > *update is com.olegych sbt-sources-processor 0.2.0
 </pre>
 
 To revert to default 'update' use this command:
@@ -42,7 +42,7 @@ h3. Usage as plugin
 import sbt._
 class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
   val olegychRepo = "olegychRepo" at "https://bitbucket.org/olegych/mvn/raw/default"
-  val sbtSourcesPlugin = "com.olegych" % "sbt-sources-plugin" % "0.2.0-SNAPSHOT"
+  val sbtSourcesPlugin = "com.olegych" % "sbt-sources-plugin" % "0.2.0"
 }
 </pre>
 
